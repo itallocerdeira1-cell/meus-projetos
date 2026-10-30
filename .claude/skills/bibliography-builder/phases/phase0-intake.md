@@ -1,0 +1,110 @@
+# Phase 0: Intake
+
+## Why This Phase Matters
+
+Before extracting citations, you need to understand the document's citation conventions. Author-Year formats vary: some use "and," others use "&"; some include page numbers, others don't. Confirming these patterns upfront prevents extraction errors.
+
+## Your Tasks
+
+### 1. Read the Document
+
+Read the manuscript file provided by the user. Note:
+- File format (markdown, docx, txt)
+- Approximate length (word count, page count)
+- Subject matter (helps disambiguate common author names)
+
+### 2. Identify Citation Format
+
+First, determine the citation format used in the manuscript:
+
+**Check for Pandoc format first** (from our writing skills):
+- Look for `[@` patterns — e.g., `[@smithHousing2020]`, `[@key1; @key2]`
+- Look for narrative `@key` patterns — e.g., `@smithHousing2020 argues`
+- If Pandoc citations are present, this is the **primary format** (fast, deterministic matching)
+
+**Fall back to legacy Author-Year format**:
+- Parenthetical: `(Smith 2020)`, `(Smith and Jones 2020)`
+- Narrative: `Smith (2020) argues...`
+
+**For legacy format, also identify:**
+
+**Connector style:**
+- "and" → `(Smith and Jones 2020)`
+- "&" → `(Smith & Jones 2020)`
+
+**Page number format:**
+- `p. 45` or `pp. 45-50`
+- `: 45` (colon separator)
+- `, 45` (comma only)
+- No page numbers
+
+**Multiple citation separator:**
+- Semicolon: `(Smith 2020; Jones 2019)`
+- Comma: `(Smith 2020, Jones 2019)`
+
+**Narrative vs. parenthetical ratio:**
+- Mostly `(Author Year)` parenthetical?
+- Mixed with `Author (Year)` narrative?
+
+### 3. Count Citations
+
+Provide approximate count:
+- Total citation instances (including duplicates)
+- Estimated unique citations
+
+### 4. Confirm Output Format
+
+Ask user to confirm desired bibliography format:
+- **APA 7th** - Psychology, social sciences
+- **ASA** - Sociology journals
+- **Chicago Author-Date** - General humanities/social sciences
+- **Other** - Specify
+
+### 5. Verify Library Access
+
+Check that `references.bib` is accessible:
+```
+Read the references.bib file at the path provided by the user
+Confirm it contains entries and citation keys are present
+```
+
+If references.bib is not accessible, inform the user before proceeding.
+
+## Output: Intake Report
+
+Create a brief report:
+
+```markdown
+# Bibliography Builder: Intake Report
+
+## Document
+- **File**: [path]
+- **Format**: [md/docx/txt]
+- **Word count**: ~[X]
+
+## Citation Format Detected
+- **Primary format**: [Pandoc [@citationKey] / Legacy Author-Year]
+- **Connector** (legacy only): [and / &]
+- **Page numbers**: [yes/no, format]
+- **Multi-citation separator**: [semicolon]
+
+## Counts
+- **Citation instances**: ~[X]
+- **Estimated unique**: ~[X]
+
+## Output Format Requested
+- **Style**: [APA 7th / ASA / Chicago / Other]
+
+## Library Status
+- **references.bib**: [Found / Not available]
+- **Entry count**: [Successful read / Failed]
+```
+
+## Pause Point
+
+Present the intake report to the user. Confirm:
+1. Citation patterns detected correctly?
+2. Output format confirmed?
+3. Library (references.bib) accessible?
+
+Once confirmed, proceed to Phase 1: Citation Extraction.
