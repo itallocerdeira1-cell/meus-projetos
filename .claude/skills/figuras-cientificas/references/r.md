@@ -27,6 +27,8 @@ Exemplo completo e testado: `assets/exemplos/km_raincloud.R`, com pontos + boxpl
 | `tamanho_ponto(perfil)`, `tamanho_texto(perfil, fator)` | `size` para pontos e para `geom_text`/`annotate` |
 | `rotulo_num("pt", casas)` | Vírgula decimal e sinal de menos nos eixos (`labels =`) |
 | `fmt_num(v, casas, "pt")` | Números para subtítulos e anotações |
+| `arredondar(v, casas)` | Metade para longe do zero (igual ao Python) |
+| `degraus(d, x, grupo)` | Dados em degrau para `geom_ribbon` (IC de KM) |
 | `salvar_pub(plot, base, perfil, largura, altura_mm)` | PDF (cairo, fontes embutidas), TIFF LZW e PNG via `ragg` |
 
 ## Pacotes por tipo de gráfico
@@ -57,6 +59,10 @@ Exemplo completo e testado: `assets/exemplos/km_raincloud.R`, com pontos + boxpl
 - **Censuras na legenda:** use `show.legend = FALSE` no `geom_point` das censuras, senão a legenda vira "+".
 - **Números cortados nas bordas** (tabela de risco, rótulos no fim das linhas): `coord_cartesian(clip = "off")`.
 - **Anotação saindo do painel:** prefira `labs(subtitle = ...)` a `annotate()` perto do topo.
+- **IC de sobrevida em diagonal:** o `geom_ribbon` liga os pontos com retas; a curva de KM é em degrau. Use `geom_ribbon(data = degraus(km), ...)` (helper do `tema_pub.R`).
+- **Colunas de texto no patchwork** (forest plot com rótulos e HR ao lado): o patchwork não mede texto. Dê às colunas de texto largura em mm, `plot_layout(widths = unit(c(108, 1, 76), c("mm", "null", "mm")))`, e confira que nada encosta na borda.
+- **Fonte das anotações:** o `tema_pub.R` já ajusta `geom_text`/`annotate` para a fonte da casa. Se usar `ggrepel` ou `ggtext`, passe `family = fonte_pub()`.
+- **Arredondamento:** use `fmt_num()` (metade para longe do zero), nunca `sprintf`, para os números saírem iguais aos da versão em Python.
 - **Tamanhos:** `size` de texto no ggplot é em mm. Use `tamanho_texto(perfil)` em vez de números soltos.
 - **ggplot2 antigo:** no ggplot2 < 3.5, `legend.position = c(x, y)` funciona; no 3.5+, use `legend.position = "inside"` + `legend.position.inside = c(x, y)`.
 - **Aviso "Vectorized input to element_text()"** ao colorir cada rótulo do eixo (tabela de risco): é esperado e funciona. Para evitar o aviso, use `ggtext::element_markdown()` com rótulos coloridos em HTML.

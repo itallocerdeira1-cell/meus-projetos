@@ -33,8 +33,7 @@ hr <- exp(c(coef(cox), confint(cox)))
 p_lr <- 1 - pchisq(survdiff(Surv(tempo, evento) ~ grupo, data = df)$chisq, 1)
 quebras <- seq(0, 36, 6)
 pB <- ggplot(km, aes(tempo, sobrev, colour = grupo, fill = grupo)) +
-  geom_ribbon(aes(ymin = lo, ymax = hi), stat = "identity", alpha = 0.15, colour = NA,
-              outline.type = "full", data = transform(km)) +
+  geom_ribbon(data = degraus(km, x = "tempo"), aes(ymin = lo, ymax = hi), alpha = 0.15, colour = NA) +
   geom_step(linewidth = linha_dados(perfil)) +
   geom_point(data = subset(km, cens), shape = 124, size = tamanho_ponto(perfil) * 0.9, show.legend = FALSE) +
   annotate("text", x = 36, y = 1, hjust = 1, vjust = 1, colour = tinta_pub, size = tamanho_texto(perfil),

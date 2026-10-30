@@ -67,6 +67,8 @@ theme_pub <- function(perfil = "revista-alto", grade = c("nenhuma", "y", "x", "x
       legend.title = element_text(colour = tinta_pub, size = f),
       legend.background = element_blank(),
       legend.key = element_blank(),
+      legend.key.height = unit(f * 1.3, "pt"),
+      legend.key.width = unit(f * 1.8, "pt"),
       plot.title = element_text(face = "bold", size = f * 1.15, hjust = 0),
       plot.title.position = "plot",
       plot.subtitle = element_text(size = f, colour = tinta_pub, hjust = 0),
@@ -79,6 +81,25 @@ theme_pub <- function(perfil = "revista-alto", grade = c("nenhuma", "y", "x", "x
       panel.grid.major.x = if (grade %in% c("x", "xy")) linha_grade else element_blank(),
       plot.margin = margin(f * 0.5, f * 0.8, f * 0.5, f * 0.5)
     )
+}
+
+# geom_text/annotate não herdam a fonte do tema: alinhar os padrões com o estilo da casa.
+update_geom_defaults("text", list(family = fonte_pub(), colour = tinta_pub))
+update_geom_defaults("label", list(family = fonte_pub(), colour = tinta_pub))
+
+# Transforma uma curva em degrau para geom_ribbon (que interpola em diagonal).
+# Use nas faixas de IC de Kaplan–Meier e incidência acumulada: d precisa das colunas x e grupo.
+degraus <- function(d, x = "t", grupo = "grupo") {
+  partes <- lapply(split(d, d[[grupo]], drop = TRUE), function(g) {
+    g <- g[order(g[[x]]), ]
+    n <- nrow(g)
+    if (n < 2) return(g)
+    idx <- c(rbind(seq_len(n - 1), seq_len(n - 1)), n)
+    out <- g[idx, ]
+    out[[x]] <- c(rbind(g[[x]][-n], g[[x]][-1]), g[[x]][n])
+    out
+  })
+  do.call(rbind, partes)
 }
 
 scale_colour_okabe <- function(...) scale_colour_manual(values = okabe_ito, ...)
@@ -96,8 +117,16 @@ rotulo_num <- function(idioma = "pt", casas = NULL) {
   }
 }
 
+# Arredonda a metade para longe do zero (5,25 -> 5,3), igual ao arredondar() do estilo_pub.py.
+# Tira antes o ruído de ponto flutuante (5,2500000001), para os dois lados darem o mesmo número.
+arredondar <- function(v, casas = 1) {
+  m <- 10^casas
+  limpo <- as.numeric(formatC(abs(v), digits = 15, format = "g"))
+  sign(v) * floor(limpo * m + 0.5) / m
+}
+
 fmt_num <- function(v, casas = 1, idioma = "pt") {
-  s <- formatC(v, format = "f", digits = casas)
+  s <- formatC(arredondar(v, casas), format = "f", digits = casas)
   s <- sub("-", "−", s, fixed = TRUE)
   if (idioma == "pt") chartr(".", ",", s) else s
 }

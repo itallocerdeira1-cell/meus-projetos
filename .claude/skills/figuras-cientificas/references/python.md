@@ -31,6 +31,7 @@ Exemplo completo e testado: `assets/exemplos/km_raincloud.py`, com raincloud, di
 | `letra_painel(ax, "A", p)` | Letra do painel em negrito, à esquerda |
 | `virgula_decimal(ax, "xy", casas)` | Vírgula decimal e sinal de menos tipográfico nos eixos |
 | `fmt_num(v, casas, idioma)` | Números para anotações (−14,3) |
+| `arredondar(v, casas)` | Metade para longe do zero (igual ao R) |
 | `raincloud(ax, grupos, valores)` | Pontos + boxplot + meia densidade, com n no eixo |
 | `kaplan_meier(ax, ax_risco, tempos, eventos, grupos, ordem, ticks)` | KM com IC log-log, censuras e tabela de risco |
 | `salvar_pub(fig, base, p, formatos)` | Exporta PDF (fontes embutidas), TIFF LZW e PNG no dpi do perfil |
@@ -60,3 +61,5 @@ Exemplo completo e testado: `assets/exemplos/km_raincloud.py`, com raincloud, di
 - **Marcações arredondadas:** com `casas=1`, defina `ax.set_yticks` compatíveis (0; 0,2; 0,4…). Senão 0,25 vira "0,2" e o eixo mente.
 - **Cores do seaborn:** passe `palette=OKABE_ITO[:k]` explicitamente; algumas funções ignoram o `prop_cycle`.
 - **Jitter:** sempre com `np.random.default_rng(semente)` para a figura sair igual em toda execução.
+- **Arredondamento:** o f-string arredonda a metade para o par (5,25 → "5,2"); o R costuma dar "5,3". Use `fmt_num()` (que usa `arredondar()`, metade para longe do zero) em todo número escrito na figura.
+- **Colunas de texto ao lado do gráfico** (forest plot): use `subplot_mosaic` com eixos de texto (`axis("off")`), ajuste `width_ratios` e confira a margem: `np.where(img.min(axis=0) < 200)[0]` não pode começar em 0 nem terminar na última coluna.

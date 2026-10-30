@@ -119,9 +119,19 @@ def virgula_decimal(ax, eixos="xy", casas=None):
         getattr(ax, f"{e}axis").set_major_formatter(FuncFormatter(fmt))
 
 
+def arredondar(v, casas=1):
+    """Arredonda a metade para longe do zero (5,25 → 5,3; −0,25 → −0,3), igual ao arredondar() do tema_pub.R.
+
+    O f-string do Python arredonda 5,25 para 5,2 (metade para o par); o R costuma dar 5,3.
+    Use sempre esta função para que a mesma figura mostre os mesmos números nas duas linguagens.
+    """
+    from decimal import Decimal, ROUND_HALF_UP
+    return float(Decimal(repr(float(v))).quantize(Decimal(1).scaleb(-casas), rounding=ROUND_HALF_UP))
+
+
 def fmt_num(v, casas=1, idioma="pt"):
     """Formata número para anotação, com vírgula decimal em português e sinal de menos tipográfico."""
-    s = f"{v:.{casas}f}".replace("-", "−")
+    s = f"{arredondar(v, casas):.{casas}f}".replace("-", "−")
     return s.replace(".", ",") if idioma == "pt" else s
 
 
@@ -191,7 +201,7 @@ def kaplan_meier(ax, ax_risco, tempos, eventos, grupos, ordem=None, cores=None, 
                 markersize=mpl.rcParams["lines.markersize"] * 1.2,
                 markeredgewidth=mpl.rcParams["axes.linewidth"] * 1.5)
         for x in ticks:
-            ax_risco.text(x, i, str(int((t >= x).sum())), ha="center", va="center", color=c)
+            ax_risco.text(x, i, str(int((t >= x).sum())), ha="center", va="center_baseline", color=c)
     ax.set_xticks(ticks)
     ax.set_xlim(ticks[0], ticks[-1])
     ax.set_ylim(0, 1.02)
@@ -200,6 +210,7 @@ def kaplan_meier(ax, ax_risco, tempos, eventos, grupos, ordem=None, cores=None, 
     ax_risco.set_yticks(range(len(ordem)), ordem)
     for i, rot in enumerate(ax_risco.get_yticklabels()):
         rot.set_color(cores[i % len(cores)])
+        rot.set_verticalalignment("center_baseline")
     ax_risco.tick_params(left=False, bottom=False, labelbottom=False,
                          pad=mpl.rcParams["ytick.labelsize"] * 1.2)
     for lado in ax_risco.spines.values():

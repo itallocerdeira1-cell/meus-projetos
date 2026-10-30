@@ -11,6 +11,9 @@ Avalie **olhando o PNG renderizado no tamanho final**, não o código. Os defeit
 - Os n batem com os dados (contar de novo).
 - Eixos sem cortes enganosos; barras começam em 0; razões em escala log.
 - Marcações de eixo corretas depois da formatação (0,25 não pode ter virado "0,2").
+- Unidades só quando a fonte dos dados as informa. Na dúvida, sem unidade e com a pergunta ao usuário; nunca presuma uma unidade.
+- Se houver versão em R e em Python, os números escritos são idênticos nas duas.
+- Faixas de IC de curvas em degrau (KM, incidência acumulada) também em degrau.
 
 ### 2. Estatística correta
 - Efeito com IC 95% presente quando há comparação.
@@ -26,7 +29,8 @@ Avalie **olhando o PNG renderizado no tamanho final**, não o código. Os defeit
 
 ### 4. Legibilidade no tamanho final
 - Nenhum texto abaixo da fonte mínima do perfil.
-- Nada cortado, nada sobreposto (rótulos, legenda sobre dados, anotações).
+- Nada cortado, nada sobreposto (rótulos, legenda sobre dados, anotações). Confira as bordas numericamente: `python3 -c "from PIL import Image; import numpy as np; im = np.asarray(Image.open('x.png').convert('L')); c = np.where(im.min(0) < 200)[0]; print(c.min(), c.max(), im.shape)"`. Tinta na coluna 0 ou na última significa corte.
+- Texto em cinza claro (`#9A9A9A`) só para marcas gráficas, nunca para texto que precisa ser lido.
 - Acentos e caracteres especiais corretos (ç, ã, −, –, ≥).
 - `poster` e `slide`: a mensagem principal é entendida em 5 segundos, de longe.
 
